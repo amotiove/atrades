@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATrades — Institutional-Grade Trading Signals & Market Intelligence</title>
+<meta name="description" content="10 AI-powered strategies scanning the market 24/7. Get institutional-grade trading signals with zero guesswork.">
+<meta property="og:title" content="ATrades — Institutional-Grade Trading Signals">
+<meta property="og:description" content="10 AI-powered strategies scanning the market 24/7. Get the same signals our algorithms trade on.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://atrades.io">
+<meta property="og:image" content="https://atrades.io/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0B0F1A;--bg2:#111827;--bg3:#1a2234;--green:#00FF88;--red:#FF3B3B;--gold:#FFD700;--white:#ffffff;--gray:#8892a4;--border:#1e293b;--font-head:'Space Grotesk',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:700}
+.mono{font-family:var(--font-mono)}
+.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.gray{color:var(--gray)}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes chartDraw{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(11,15,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 0}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-head);font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
+.logo span{color:var(--green)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{font-size:.9rem;color:var(--gray);transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--green);color:var(--bg);padding:8px 20px;border-radius:8px;font-weight:700;font-size:.85rem;transition:transform .2s,box-shadow .2s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,255,136,.3)}
+.mobile-menu{display:none;background:none;border:none;color:var(--white);font-size:1.5rem;cursor:pointer}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(0,255,136,.06) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1.1;margin-bottom:20px;letter-spacing:-1.5px}
+.hero p{font-size:1.15rem;color:var(--gray);max-width:600px;margin:0 auto 40px}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+.btn-primary{background:var(--green);color:var(--bg);padding:14px 32px;border-radius:10px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.btn-primary:hover{box-shadow:0 4px 30px rgba(0,255,136,.35);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--white);padding:14px 32px;border-radius:10px;font-weight:700;font-size:1rem;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+
+/* Stats bar */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:16px;overflow:hidden;max-width:800px;margin:0 auto}
+.stat-item{background:var(--bg2);padding:24px 16px;text-align:center}
+.stat-value{font-family:var(--font-mono);font-size:1.8rem;font-weight:700;margin-bottom:4px}
+.stat-label{font-size:.8rem;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+.stat-live{display:inline-flex;align-items:center;gap:6px}
+
+/* Section styling */
+section{padding:100px 0}
+.section-label{font-family:var(--font-mono);font-size:.75rem;color:var(--green);text-transform:uppercase;letter-spacing:3px;margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3vw,2.8rem);margin-bottom:16px;letter-spacing:-1px}
+.section-sub{color:var(--gray);max-width:550px;margin-bottom:48px}
+
+/* How it works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;position:relative}
+.steps::before{content:'';position:absolute;top:60px;left:15%;right:15%;height:2px;background:linear-gradient(90deg,var(--green),var(--border),var(--green));opacity:.3}
+.step{text-align:center;position:relative;z-index:1}
+.step-icon{width:80px;height:80px;border-radius:50%;background:var(--bg2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;transition:border-color .3s}
+.step:hover .step-icon{border-color:var(--green)}
+.step-num{font-family:var(--font-mono);font-size:.7rem;color:var(--green);margin-bottom:8px}
+.step h3{font-size:1.15rem;margin-bottom:8px}
+.step p{font-size:.9rem;color:var(--gray);max-width:280px;margin:0 auto}
+
+/* Strategy cards */
+.strat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.strat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .3s;position:relative;overflow:hidden}
+.strat-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,.08)}
+.strat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:0;transition:opacity .3s}
+.strat-card:hover::before{opacity:1}
+.strat-badge{display:inline-block;font-family:var(--font-mono);font-size:.65rem;padding:4px 10px;border-radius:20px;background:rgba(0,255,136,.1);color:var(--green);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.strat-badge.swing{background:rgba(255,215,0,.1);color:var(--gold)}
+.strat-badge.quant{background:rgba(136,146,164,.15);color:var(--gray)}
+.strat-card h3{font-size:1.05rem;margin-bottom:8px}
+.strat-card p{font-size:.85rem;color:var(--gray);line-height:1.5}
+
+/* Dashboard */
+.dashboard{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.dash-header h3{font-size:1rem;display:flex;align-items:center;gap:10px}
+.dash-tabs{display:flex;gap:4px}
+.dash-tab{font-family:var(--font-mono);font-size:.7rem;padding:6px 14px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--gray);cursor:pointer}
+.dash-tab.active{background:var(--green);color:var(--bg);border-color:var(--green)}
+.dash-body{display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--border)}
+.dash-panel{background:var(--bg2);padding:24px}
+.dash-panel h4{font-family:var(--font-mono);font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+/* Trades table */
+.trades-table{width:100%;font-family:var(--font-mono);font-size:.78rem}
+.trades-table th{text-align:left;color:var(--gray);font-weight:400;padding:8px 0;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
+.trades-table td{padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
+.trades-table tr{animation:slideIn .4s ease backwards}
+.trades-table tr:nth-child(1){animation-delay:.1s}
+.trades-table tr:nth-child(2){animation-delay:.2s}
+.trades-table tr:nth-child(3){animation-delay:.3s}
+.trades-table tr:nth-child(4){animation-delay:.4s}
+.trades-table tr:nth-child(5){animation-delay:.5s}
+/* Chart */
+.chart-area{position:relative;height:200px}
+.chart-area svg{width:100%;height:100%}
+.chart-line{fill:none;stroke:var(--green);stroke-width:2;stroke-dasharray:1000;stroke-dashoffset:1000;animation:chartDraw 2s ease forwards}
+.chart-fill{fill:url(#greenGrad);opacity:.3}
+/* Allocation */
+.alloc-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
+.alloc-bar{height:4px;border-radius:2px;background:var(--border);flex:1;margin:0 12px;position:relative;overflow:hidden}
+.alloc-fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;transition:width 1.5s ease}
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;transition:all .3s}
+.price-card:hover{transform:translateY(-4px)}
+.price-card.popular{border-color:var(--green);box-shadow:0 0 40px rgba(0,255,136,.1)}
+.popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--bg);font-family:var(--font-mono);font-size:.65rem;font-weight:700;padding:4px 16px;border-radius:20px;text-transform:uppercase;letter-spacing:1px}
+.price-tier{font-family:var(--font-mono);font-size:.7rem;color:var(--green);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.price-amount{font-family:var(--font-mono);font-size:2.8rem;font-weight:700;margin-bottom:4px}
+.price-amount span{font-size:1rem;color:var(--gray)}
+.price-desc{font-size:.85rem;color:var(--gray);margin-bottom:24px}
+.price-features{list-style:none;margin-bottom:32px}
+.price-features li{font-size:.85rem;padding:8px 0;border-bottom:1px solid rgba(30,41,59,.5);display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.8rem}
+.price-btn{display:block;width:100%;padding:14px;text-align:center;border-radius:10px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.price-btn.primary{background:var(--green);color:var(--bg)}
+.price-btn.primary:hover{box-shadow:0 4px 20px rgba(0,255,136,.3)}
+.price-btn.outline{background:transparent;color:var(--white);border:1px solid var(--border)}
+.price-btn.outline:hover{border-color:var(--green);color:var(--green)}
+
+/* FAQ */
+.faq-list{max-width:720px}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{padding:20px 0;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:1rem;transition:color .2s}
+.faq-q:hover{color:var(--green)}
+.faq-q::after{content:'+';font-family:var(--font-mono);font-size:1.2rem;color:var(--gray);transition:transform .3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg);color:var(--green)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;color:var(--gray);font-size:.9rem;line-height:1.7}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:20px}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand p{color:var(--gray);font-size:.85rem;margin-top:12px;max-width:300px}
+.footer-col h4{font-family:var(--font-mono);font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.footer-col a{display:block;font-size:.85rem;color:var(--gray);padding:4px 0;transition:color .2s}
+.footer-col a:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-disclaimer{font-size:.75rem;color:var(--gray);max-width:700px;line-height:1.6}
+.footer-copy{font-family:var(--font-mono);font-size:.75rem;color:var(--gray)}
+
+/* Mobile */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .mobile-menu{display:block}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr;gap:40px}
+  .steps::before{display:none}
+  .strat-grid{grid-template-columns:1fr}
+  .dash-body{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+<div class="container">
+  <a href="#" class="logo">A<span>Trades</span></a>
+  <div class="nav-links">
+    <a href="#strategies">Strategies</a>
+    <a href="#performance">Performance</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#pricing" class="nav-cta">Start Free Trial</a>
+  </div>
+  <button class="mobile-menu" onclick="document.querySelector('.nav-links').style.display=document.querySelector('.nav-links').style.display==='flex'?'none':'flex'" aria-label="Menu">☰</button>
+</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+<div class="container">
+  <div class="section-label">Live Trading Intelligence</div>
+  <h1>Institutional-Grade Signals.<br>Zero Guesswork.</h1>
+  <p>10 AI-powered strategies scanning the market 24/7. Get the same signals our algorithms trade on.</p>
+  <div class="hero-buttons">
+    <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Start Free Trial</button>
+    <button class="btn-outline" onclick="document.getElementById('performance').scrollIntoView({behavior:'smooth'})">View Live Performance</button>
+  </div>
+  <div class="stats-bar fade-in">
+    <div class="stat-item">
+      <div class="stat-value green mono" data-count="68">0%</div>
+      <div class="stat-label">Win Rate</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value green mono">+3.2%</div>
+      <div class="stat-label">Avg Return</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value mono" data-count="10">0</div>
+      <div class="stat-label">Strategies</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value mono stat-live"><span class="pulse-dot"></span> <span data-count="500">0</span>+</div>
+      <div class="stat-label">Markets Monitored</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works">
+<div class="container">
+  <div class="section-label fade-in">How It Works</div>
+  <h2 class="section-title fade-in">From Signal to Trade in Seconds</h2>
+  <p class="section-sub fade-in">Our infrastructure does the heavy lifting so you can focus on execution.</p>
+  <div class="steps">
+    <div class="step fade-in">
+      <div class="step-num">01</div>
+      <div class="step-icon">📡</div>
+      <h3>Our AI Scans</h3>
+      <p>10 algorithms analyze 500+ markets in real-time, identifying high-probability setups across equities, crypto, and forex.</p>
+    </div>
+    <div class="step fade-in">
+      <div class="step-num">02</div>
+      <div class="step-icon">⚡</div>
+      <h3>Signals Generated</h3>
+      <p>When criteria align, signals fire instantly with entry, stop-loss, and target — delivered via Telegram, email, or API.</p>
+    </div>
+    <div class="step fade-in">
+      <div class="step-num">03</div>
+      <div class="step-icon">🎯</div>
+      <h3>You Trade with Confidence</h3>
+      <p>Execute on your own broker with full transparency. Every signal includes the strategy logic and risk parameters.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Strategies -->
+<section id="strategies" style="background:var(--bg2)">
+<div class="container">
+  <div class="section-label fade-in">Strategies</div>
+  <h2 class="section-title fade-in">10 Battle-Tested Algorithms</h2>
+  <p class="section-sub fade-in">Each strategy is backtested across 5+ years of data and optimized for live market conditions.</p>
+  <div class="strat-grid" id="stratGrid"></div>
+</div>
+</section>
+
+<!-- Performance Dashboard -->
+<section id="performance">
+<div class="container">
+  <div class="section-label fade-in">Live Performance</div>
+  <h2 class="section-title fade-in">Transparent. Verified. Real-Time.</h2>
+  <p class="section-sub fade-in">Every trade is logged and auditable. No cherry-picking.</p>
+  <div class="dashboard fade-in">
+    <div class="dash-header">
+      <h3><span class="pulse-dot"></span> Live Dashboard</h3>
+      <div class="dash-tabs">
+        <button class="dash-tab active">1D</button>
+        <button class="dash-tab">1W</button>
+        <button class="dash-tab">1M</button>
+        <button class="dash-tab">ALL</button>
+      </div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-panel">
+        <h4>Recent Trades</h4>
+        <table class="trades-table">
+          <thead><tr><th>Asset</th><th>Strategy</th><th>Side</th><th>P&L</th><th>Time</th></tr></thead>
+          <tbody id="tradesBody"></tbody>
+        </table>
+      </div>
+      <div class="dash-panel">
+        <h4>Portfolio P&L</h4>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+            <defs><linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00FF88" stop-opacity=".3"/><stop offset="100%" stop-color="#00FF88" stop-opacity="0"/></linearGradient></defs>
+            <path class="chart-fill" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15 400,200 0,200Z"/>
+            <path class="chart-line" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15"/>
+          </svg>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;font-family:var(--font-mono);font-size:.75rem">
+          <span class="gray">MTD Return</span><span class="green">+12.4%</span>
+        </div>
+        <h4 style="margin-top:24px">Allocation</h4>
+        <div id="allocList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+<div class="container">
+  <div class="section-label fade-in" style="text-align:center">Pricing</div>
+  <h2 class="section-title fade-in" style="text-align:center">Choose Your Edge</h2>
+  <p class="section-sub fade-in" style="text-align:center;margin-left:auto;margin-right:auto">All plans include a 7-day free trial. No credit card required.</p>
+  <div class="pricing-grid">
+    <div class="price-card fade-in">
+      <div class="price-tier">Starter</div>
+      <div class="price-amount mono">$29<span>/mo</span></div>
+      <p class="price-desc">Perfect for getting started with signal-based trading.</p>
+      <ul class="price-features">
+        <li>Daily signals</li>
+        <li>3 strategies</li>
+        <li>Email alerts</li>
+        <li>Delayed data (15 min)</li>
+        <li>Community access</li>
+      </ul>
+      <button class="price-btn outline">Start Free Trial</button>
+    </div>
+    <div class="price-card popular fade-in">
+      <div class="popular-badge">Most Popular</div>
+      <div class="price-tier">Pro</div>
+      <div class="price-amount mono">$99<span>/mo</span></div>
+      <p class="price-desc">For serious traders who want the full arsenal.</p>
+      <ul class="price-features">
+        <li>Real-time signals</li>
+        <li>All 10 strategies</li>
+        <li>Telegram alerts</li>
+        <li>API access</li>
+        <li>Priority support</li>
+        <li>Advanced analytics</li>
+      </ul>
+      <button class="price-btn primary">Start Free Trial</button>
+    </div>
+    <div class="price-card fade-in">
+      <div class="price-tier" style="color:var(--gold)">Institutional</div>
+      <div class="price-amount mono">$299<span>/mo</span></div>
+      <p class="price-desc">For funds and professional trading desks.</p>
+      <ul class="price-features">
+        <li>Everything in Pro</li>
+        <li>Custom strategies</li>
+        <li>Direct line support</li>
+        <li>Portfolio allocation engine</li>
+        <li>White-label option</li>
+        <li>Dedicated account manager</li>
+      </ul>
+      <button class="price-btn outline">Contact Sales</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--bg2)">
+<div class="container">
+  <div class="section-label fade-in">FAQ</div>
+  <h2 class="section-title fade-in">Common Questions</h2>
+  <div class="faq-list fade-in" id="faqList"></div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer>
+<div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">A<span style="color:var(--green)">Trades</span></div>
+      <p>Institutional-grade trading signals powered by AI. Scanning 500+ markets so you don't have to.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#strategies">Strategies</a>
+      <a href="#performance">Performance</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#">API Docs</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Risk Disclosure</a>
+      <a href="#">Refund Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-disclaimer">⚠️ <strong>Risk Disclaimer:</strong> Past performance does not guarantee future results. Trading involves substantial risk of loss and is not suitable for all investors. ATrades provides signals for informational purposes only and does not constitute financial advice. Always do your own research and consult a licensed financial advisor.</div>
+    <div class="footer-copy">© 2026 ATrades. All rights reserved.</div>
+  </div>
+</div>
+</footer>
+
+<script>
+// Strategies data
+const strategies = [
+  {name:'RSI Mean Reversion',desc:'Identifies overbought/oversold conditions using RSI divergence patterns across multiple timeframes.',badge:'Day Trade',type:''},
+  {name:'EMA Momentum',desc:'Captures trend continuation using exponential moving average crossovers with volume confirmation.',badge:'Day Trade',type:''},
+  {name:'ICT Smart Money',desc:'Tracks institutional order flow using liquidity sweeps, order blocks, and fair value gaps.',badge:'Swing',type:'swing'},
+  {name:'Factor Momentum',desc:'Multi-factor model combining value, momentum, and quality signals for systematic allocation.',badge:'Quant',type:'quant'},
+  {name:'Pairs Trading',desc:'Statistical arbitrage between correlated assets when spread deviates beyond 2 standard deviations.',badge:'Quant',type:'quant'},
+  {name:'Opening Range Breakout',desc:'Captures the first directional move after market open using the initial 15-minute range.',badge:'Day Trade',type:''},
+  {name:'Regime Adaptive',desc:'Dynamically switches between trend-following and mean-reversion based on detected market regime.',badge:'Quant',type:'quant'},
+  {name:'VWAP Reversion',desc:'Fades extended moves away from VWAP with institutional-level volume profile analysis.',badge:'Day Trade',type:''},
+  {name:'Swing (Percoco)',desc:'Multi-day position trades using structural highs/lows with trailing stop optimization.',badge:'Swing',type:'swing'},
+  {name:'ML Signal Filter',desc:'Neural network ensemble that filters and ranks signals from all other strategies for highest conviction.',badge:'Quant',type:'quant'},
+];
+
+const grid=document.getElementById('stratGrid');
+strategies.forEach(s=>{
+  grid.innerHTML+=`<div class="strat-card fade-in"><span class="strat-badge ${s.type}">${s.badge}</span><h3>${s.name}</h3><p>${s.desc}</p></div>`;
+});
+
+// Trades data
+const trades=[
+  {asset:'AAPL',strat:'EMA Momentum',side:'LONG',pnl:'+2.4%',time:'2m ago'},
+  {asset:'BTC/USD',strat:'ICT Smart Money',side:'SHORT',pnl:'+1.8%',time:'14m ago'},
+  {asset:'EUR/USD',strat:'VWAP Reversion',side:'LONG',pnl:'-0.6%',time:'28m ago'},
+  {asset:'TSLA',strat:'Opening Range',side:'LONG',pnl:'+4.1%',time:'1h ago'},
+  {asset:'ETH/USD',strat:'RSI Mean Rev.',side:'SHORT',pnl:'+1.2%',time:'2h ago'},
+];
+const tbody=document.getElementById('tradesBody');
+trades.forEach(t=>{
+  const c=t.pnl.startsWith('+')?'green':'red';
+  tbody.innerHTML+=`<tr><td><strong>${t.asset}</strong></td><td class="gray">${t.strat}</td><td>${t.side}</td><td class="${c} mono">${t.pnl}</td><td class="gray">${t.time}</td></tr>`;
+});
+
+// Allocation
+const allocs=[{name:'Equities',pct:40,color:'#00FF88'},{name:'Crypto',pct:25,color:'#FFD700'},{name:'Forex',pct:20,color:'#3B82F6'},{name:'Cash',pct:15,color:'#8892a4'}];
+const allocList=document.getElementById('allocList');
+allocs.forEach(a=>{
+  allocList.innerHTML+=`<div class="alloc-item"><span class="mono" style="font-size:.8rem;min-width:70px">${a.name}</span><div class="alloc-bar"><div class="alloc-fill" style="width:0%;background:${a.color}" data-width="${a.pct}%"></div></div><span class="mono" style="font-size:.8rem">${a.pct}%</span></div>`;
+});
+
+// FAQ
+const faqs=[
+  {q:'How accurate are the signals?',a:'Our strategies maintain a combined win rate of approximately 68% across all market conditions. Individual strategy performance varies — some trend-following strategies may have lower win rates but higher reward-to-risk ratios. All historical performance is audited and available on the dashboard.'},
+  {q:'How are signals delivered?',a:'Signals are delivered in real-time via Telegram (Pro+), email, and our API. Each signal includes the asset, direction (long/short), entry price, stop-loss, and take-profit targets. Starter plan signals are delayed by 15 minutes.'},
+  {q:'Is this financial advice?',a:'No. ATrades provides trading signals for informational and educational purposes only. We are not registered investment advisors. All trading involves risk, and you should never trade with money you cannot afford to lose. Always consult a licensed financial advisor.'},
+  {q:'Can I cancel anytime?',a:'Yes. All plans are month-to-month with no long-term commitment. You can cancel directly from your dashboard. Your access continues until the end of your billing period.'},
+  {q:'What markets do you cover?',a:'We monitor 500+ instruments across US equities, major cryptocurrencies (BTC, ETH, SOL, and more), and forex pairs. Institutional plans can request custom market coverage.'},
+  {q:'Do you offer a free trial?',a:'Yes! Every plan comes with a 7-day free trial. No credit card required to start. You\'ll get full access to your chosen tier\'s features during the trial period.'},
+];
+const faqList=document.getElementById('faqList');
+faqs.forEach(f=>{
+  const d=document.createElement('div');d.className='faq-item';
+  d.innerHTML=`<div class="faq-q">${f.q}</div><div class="faq-a">${f.a}</div>`;
+  d.querySelector('.faq-q').onclick=()=>d.classList.toggle('open');
+  faqList.appendChild(d);
+});
+
+// Scroll animations
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// Counter animation
+function animateCounters(){
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target=parseInt(el.dataset.count);
+    const suffix=el.closest('.stat-value')?.textContent.includes('%')?'%':'';
+    let current=0;
+    const step=Math.ceil(target/40);
+    const timer=setInterval(()=>{
+      current+=step;
+      if(current>=target){current=target;clearInterval(timer)}
+      el.textContent=current+suffix;
+    },30);
+  });
+}
+
+// Allocation bar animation
+function animateAlloc(){
+  document.querySelectorAll('.alloc-fill').forEach(el=>{
+    setTimeout(()=>{el.style.width=el.dataset.width},300);
+  });
+}
+
+// Trigger on load
+setTimeout(animateCounters,500);
+setTimeout(animateAlloc,1000);
+</script>
+</body>
+</html>
