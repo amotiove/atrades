@@ -35,6 +35,11 @@ h1,h2,h3,h4{font-family:var(--font-head);font-weight:700}
 .fade-in.visible{opacity:1;transform:translateY(0)}
 .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
 
+/* Three.js canvas layers */
+.three-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.hero,.pricing-section,.strategies-section{position:relative}
+.hero .container,.pricing-section .container,.strategies-section .container{position:relative;z-index:1}
+
 /* Nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(11,15,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 0}
 nav .container{display:flex;align-items:center;justify-content:space-between}
@@ -48,8 +53,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .mobile-menu{display:none;background:none;border:none;color:var(--white);font-size:1.5rem;cursor:pointer}
 
 /* Hero */
-.hero{padding:140px 0 80px;text-align:center;position:relative}
-.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(0,255,136,.06) 0%,transparent 70%);pointer-events:none}
+.hero{padding:140px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(0,255,136,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
 .hero h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1.1;margin-bottom:20px;letter-spacing:-1.5px}
 .hero p{font-size:1.15rem;color:var(--gray);max-width:600px;margin:0 auto 40px}
 .hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
@@ -103,7 +108,6 @@ section{padding:100px 0}
 .dash-body{display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--border)}
 .dash-panel{background:var(--bg2);padding:24px}
 .dash-panel h4{font-family:var(--font-mono);font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
-/* Trades table */
 .trades-table{width:100%;font-family:var(--font-mono);font-size:.78rem}
 .trades-table th{text-align:left;color:var(--gray);font-weight:400;padding:8px 0;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
 .trades-table td{padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
@@ -113,17 +117,16 @@ section{padding:100px 0}
 .trades-table tr:nth-child(3){animation-delay:.3s}
 .trades-table tr:nth-child(4){animation-delay:.4s}
 .trades-table tr:nth-child(5){animation-delay:.5s}
-/* Chart */
 .chart-area{position:relative;height:200px}
 .chart-area svg{width:100%;height:100%}
 .chart-line{fill:none;stroke:var(--green);stroke-width:2;stroke-dasharray:1000;stroke-dashoffset:1000;animation:chartDraw 2s ease forwards}
 .chart-fill{fill:url(#greenGrad);opacity:.3}
-/* Allocation */
 .alloc-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
 .alloc-bar{height:4px;border-radius:2px;background:var(--border);flex:1;margin:0 12px;position:relative;overflow:hidden}
 .alloc-fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;transition:width 1.5s ease}
 
 /* Pricing */
+.pricing-section{overflow:hidden}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
 .price-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;transition:all .3s}
 .price-card:hover{transform:translateY(-4px)}
@@ -163,6 +166,9 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 .footer-disclaimer{font-size:.75rem;color:var(--gray);max-width:700px;line-height:1.6}
 .footer-copy{font-family:var(--font-mono);font-size:.75rem;color:var(--gray)}
 
+/* GSAP scroll animations */
+.gsap-fade{opacity:0;transform:translateY(40px)}
+
 /* Mobile */
 @media(max-width:768px){
   .nav-links{display:none}
@@ -196,7 +202,8 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 </nav>
 
 <!-- Hero -->
-<section class="hero">
+<section class="hero" id="hero-section">
+<canvas id="hero-canvas" class="three-canvas"></canvas>
 <div class="container">
   <div class="section-label">Live Trading Intelligence</div>
   <h1>Institutional-Grade Signals.<br>Zero Guesswork.</h1>
@@ -256,7 +263,8 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 </section>
 
 <!-- Strategies -->
-<section id="strategies" style="background:var(--bg2)">
+<section id="strategies" class="strategies-section" style="background:var(--bg2);position:relative;overflow:hidden">
+<canvas id="shapes-canvas" class="three-canvas"></canvas>
 <div class="container">
   <div class="section-label fade-in">Strategies</div>
   <h2 class="section-title fade-in">10 Battle-Tested Algorithms</h2>
@@ -310,7 +318,8 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 </section>
 
 <!-- Pricing -->
-<section id="pricing">
+<section id="pricing" class="pricing-section">
+<canvas id="grid-canvas" class="three-canvas"></canvas>
 <div class="container">
   <div class="section-label fade-in" style="text-align:center">Pricing</div>
   <h2 class="section-title fade-in" style="text-align:center">Choose Your Edge</h2>
@@ -408,7 +417,13 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 </div>
 </footer>
 
+<!-- Three.js & GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
 <script>
+// ============ ORIGINAL SITE LOGIC ============
 // Strategies data
 const strategies = [
   {name:'RSI Mean Reversion',desc:'Identifies overbought/oversold conditions using RSI divergence patterns across multiple timeframes.',badge:'Day Trade',type:''},
@@ -466,7 +481,7 @@ faqs.forEach(f=>{
   faqList.appendChild(d);
 });
 
-// Scroll animations
+// Scroll animations (original observer)
 const obs=new IntersectionObserver((entries)=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
 },{threshold:.1,rootMargin:'0px 0px -50px 0px'});
@@ -487,16 +502,308 @@ function animateCounters(){
   });
 }
 
-// Allocation bar animation
 function animateAlloc(){
   document.querySelectorAll('.alloc-fill').forEach(el=>{
     setTimeout(()=>{el.style.width=el.dataset.width},300);
   });
 }
 
-// Trigger on load
 setTimeout(animateCounters,500);
 setTimeout(animateAlloc,1000);
+
+// ============ THREE.JS 3D EFFECTS ============
+const isMobile = window.innerWidth < 768;
+
+// --- 1. HERO PARTICLE FIELD ---
+(function initHeroParticles() {
+  const canvas = document.getElementById('hero-canvas');
+  const section = document.getElementById('hero-section');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(section.offsetWidth, section.offsetHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, section.offsetWidth / section.offsetHeight, 0.1, 1000);
+  camera.position.z = 50;
+
+  const particleCount = isMobile ? 300 : 1000;
+  const positions = new Float32Array(particleCount * 3);
+  const velocities = [];
+  const spread = 80;
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * spread;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * spread;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * spread;
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.02,
+      y: (Math.random() - 0.5) * 0.02,
+      z: (Math.random() - 0.5) * 0.02
+    });
+  }
+
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const particleMat = new THREE.PointsMaterial({
+    color: 0x00FF88,
+    size: isMobile ? 1.5 : 1.2,
+    transparent: true,
+    opacity: 0.8,
+    sizeAttenuation: true
+  });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Connection lines
+  const lineMaxDist = isMobile ? 0 : 8; // disable lines on mobile
+  let lineMat, lineGeo, lineObj;
+  if (!isMobile) {
+    lineMat = new THREE.LineBasicMaterial({ color: 0x00FF88, transparent: true, opacity: 0.12 });
+    lineGeo = new THREE.BufferGeometry();
+    const maxLines = 3000;
+    const linePositions = new Float32Array(maxLines * 6);
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeo.setDrawRange(0, 0);
+    lineObj = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(lineObj);
+  }
+
+  let rotY = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    const pos = particleGeo.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+      pos[i*3] += velocities[i].x;
+      pos[i*3+1] += velocities[i].y;
+      pos[i*3+2] += velocities[i].z;
+      // wrap
+      for (let j = 0; j < 3; j++) {
+        if (pos[i*3+j] > spread/2) pos[i*3+j] = -spread/2;
+        if (pos[i*3+j] < -spread/2) pos[i*3+j] = spread/2;
+      }
+    }
+    particleGeo.attributes.position.needsUpdate = true;
+
+    // Update lines
+    if (!isMobile && lineObj) {
+      const lp = lineGeo.attributes.position.array;
+      let li = 0;
+      const step = particleCount > 500 ? 3 : 1; // sample for perf
+      for (let i = 0; i < particleCount && li < 2998; i += step) {
+        for (let k = i + 1; k < particleCount && li < 2998; k += step) {
+          const dx = pos[i*3]-pos[k*3], dy = pos[i*3+1]-pos[k*3+1], dz = pos[i*3+2]-pos[k*3+2];
+          const dist = dx*dx + dy*dy + dz*dz;
+          if (dist < lineMaxDist * lineMaxDist) {
+            lp[li*6] = pos[i*3]; lp[li*6+1] = pos[i*3+1]; lp[li*6+2] = pos[i*3+2];
+            lp[li*6+3] = pos[k*3]; lp[li*6+4] = pos[k*3+1]; lp[li*6+5] = pos[k*3+2];
+            li++;
+          }
+        }
+      }
+      lineGeo.attributes.position.needsUpdate = true;
+      lineGeo.setDrawRange(0, li * 2);
+    }
+
+    rotY += 0.001;
+    particles.rotation.y = rotY;
+    if (lineObj) lineObj.rotation.y = rotY;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = section.offsetWidth, h = section.offsetHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  });
+})();
+
+// --- 2. PRICING GRID FLOOR ---
+(function initGridFloor() {
+  const canvas = document.getElementById('grid-canvas');
+  const section = document.getElementById('pricing');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(section.offsetWidth, section.offsetHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, section.offsetWidth / section.offsetHeight, 0.1, 500);
+  camera.position.set(0, 15, 30);
+  camera.lookAt(0, 0, -20);
+
+  // Grid
+  const gridSize = 100;
+  const gridDiv = isMobile ? 20 : 40;
+  const gridHelper = new THREE.GridHelper(gridSize, gridDiv, 0x00FF88, 0x00FF88);
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = 0.08;
+  gridHelper.position.y = -5;
+  scene.add(gridHelper);
+
+  // Horizon glow — a plane with gradient
+  const glowGeo = new THREE.PlaneGeometry(200, 60);
+  const glowMat = new THREE.ShaderMaterial({
+    transparent: true,
+    uniforms: { time: { value: 0 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `
+      varying vec2 vUv;
+      uniform float time;
+      void main(){
+        float glow = smoothstep(0.0, 0.5, vUv.y) * (1.0 - smoothstep(0.5, 1.0, vUv.y));
+        glow *= 0.15 + 0.05 * sin(time * 0.5);
+        gl_FragColor = vec4(0.0, 1.0, 0.533, glow * 0.4);
+      }
+    `
+  });
+  const glowPlane = new THREE.Mesh(glowGeo, glowMat);
+  glowPlane.position.set(0, 0, -50);
+  scene.add(glowPlane);
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+    glowMat.uniforms.time.value = time;
+    gridHelper.rotation.y += 0.0003;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = section.offsetWidth, h = section.offsetHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  });
+})();
+
+// --- 3. FLOATING WIREFRAME SHAPES (strategies section) ---
+(function initFloatingShapes() {
+  if (isMobile) return; // skip on mobile
+
+  const canvas = document.getElementById('shapes-canvas');
+  const section = document.getElementById('strategies');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(section.offsetWidth, section.offsetHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, section.offsetWidth / section.offsetHeight, 0.1, 200);
+  camera.position.z = 50;
+
+  const shapes = [];
+  const colors = [0x00FF88, 0x3B82F6, 0xFFD700]; // green, blue, gold
+  const geoTypes = [
+    () => new THREE.OctahedronGeometry(2, 0),
+    () => new THREE.IcosahedronGeometry(2, 0),
+    () => new THREE.TetrahedronGeometry(2, 0),
+  ];
+
+  for (let i = 0; i < 15; i++) {
+    const geo = geoTypes[i % 3]();
+    const mat = new THREE.MeshBasicMaterial({
+      color: colors[i % 3],
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(
+      (Math.random() - 0.5) * 80,
+      (Math.random() - 0.5) * 40,
+      (Math.random() - 0.5) * 30
+    );
+    mesh.userData = {
+      rotSpeed: { x: (Math.random()-0.5)*0.01, y: (Math.random()-0.5)*0.01 },
+      floatSpeed: 0.3 + Math.random() * 0.5,
+      floatOffset: Math.random() * Math.PI * 2,
+      baseY: mesh.position.y
+    };
+    scene.add(mesh);
+    shapes.push(mesh);
+  }
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+    shapes.forEach(m => {
+      m.rotation.x += m.userData.rotSpeed.x;
+      m.rotation.y += m.userData.rotSpeed.y;
+      m.position.y = m.userData.baseY + Math.sin(time * m.userData.floatSpeed + m.userData.floatOffset) * 2;
+    });
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = section.offsetWidth, h = section.offsetHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  });
+})();
+
+// --- 4. GSAP SCROLL TRIGGER ANIMATIONS ---
+gsap.registerPlugin(ScrollTrigger);
+
+// Parallax on hero particles canvas
+gsap.to('#hero-canvas', {
+  y: 150,
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '#hero-section',
+    start: 'top top',
+    end: 'bottom top',
+    scrub: true
+  }
+});
+
+// Animate sections in
+document.querySelectorAll('.section-label, .section-title, .section-sub').forEach(el => {
+  gsap.fromTo(el, { opacity: 0, y: 40 }, {
+    opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+  });
+});
+
+// Stagger strategy cards
+gsap.fromTo('.strat-card', { opacity: 0, y: 30 }, {
+  opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out',
+  scrollTrigger: { trigger: '#stratGrid', start: 'top 80%', toggleActions: 'play none none none' }
+});
+
+// Pricing cards
+gsap.fromTo('.price-card', { opacity: 0, y: 40, scale: 0.95 }, {
+  opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.15, ease: 'back.out(1.2)',
+  scrollTrigger: { trigger: '.pricing-grid', start: 'top 80%', toggleActions: 'play none none none' }
+});
+
+// Steps
+gsap.fromTo('.step', { opacity: 0, y: 30 }, {
+  opacity: 1, y: 0, duration: 0.6, stagger: 0.2, ease: 'power2.out',
+  scrollTrigger: { trigger: '.steps', start: 'top 80%', toggleActions: 'play none none none' }
+});
+
+// Dashboard
+gsap.fromTo('.dashboard', { opacity: 0, y: 40 }, {
+  opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
+  scrollTrigger: { trigger: '.dashboard', start: 'top 85%', toggleActions: 'play none none none' }
+});
+
+// Parallax on grid canvas
+gsap.to('#grid-canvas', {
+  y: -50,
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '#pricing',
+    start: 'top bottom',
+    end: 'bottom top',
+    scrub: true
+  }
+});
 </script>
 </body>
 </html>
