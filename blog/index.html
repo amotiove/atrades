@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATrades Blog - AI Trading Insights</title>
+    <meta name="description" content="Expert insights on AI trading signals, risk management, and market regimes from the ATrades team.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0B0F1A;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00FF88;
+            text-decoration: none;
+        }
+
+        .blog-header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .blog-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00FF88, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blog-subtitle {
+            font-size: 1.2rem;
+            color: #a0a9c1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0 4rem;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post-card:hover {
+            border-color: #00FF88;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+        }
+
+        .post-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .post-excerpt {
+            color: #a0a9c1;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .post-meta {
+            font-size: 0.85rem;
+            color: #00FF88;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #00FF88;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #FFD700;
+        }
+
+        .back-link::before {
+            content: "←";
+            margin-right: 0.5rem;
+        }
+
+        footer {
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+            padding: 2rem 0;
+            text-align: center;
+            color: #a0a9c1;
+        }
+
+        @media (max-width: 768px) {
+            .blog-title {
+                font-size: 2.2rem;
+            }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="../" class="logo">ATrades</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="blog-header">
+                <h1 class="blog-title">Trading Insights</h1>
+                <p class="blog-subtitle">Expert analysis on AI trading signals, risk management, and market dynamics from the ATrades team.</p>
+            </div>
+
+            <div class="posts-grid">
+                <a href="ai-trading-signals/" class="post-card">
+                    <h2 class="post-title">What Are AI Trading Signals and How Do They Work?</h2>
+                    <p class="post-excerpt">The algorithmic revolution in retail trading — and why it matters for your portfolio. Understand how modern signal generation separates from basic technical indicators.</p>
+                    <div class="post-meta">Read Article</div>
+                </a>
+
+                <a href="day-trading-vs-swing-trading/" class="post-card">
+                    <h2 class="post-title">Day Trading vs Swing Trading: Which Strategy Fits Your Lifestyle?</h2>
+                    <p class="post-excerpt">Choosing the right trading style isn't about what's "best" — it's about what's sustainable for you. Compare both approaches honestly.</p>
+                    <div class="post-meta">Read Article</div>
+                </a>
+
+                <a href="risk-management-rules/" class="post-card">
+                    <h2 class="post-title">5 Risk Management Rules Every Trader Needs</h2>
+                    <p class="post-excerpt">You don't blow up because of bad trades. You blow up because of bad risk management. The essential rules that separate surviving traders from the majority who lose money.</p>
+                    <div class="post-meta">Read Article</div>
+                </a>
+
+                <a href="market-regimes/" class="post-card">
+                    <h2 class="post-title">How to Read Market Regimes: Trending vs Mean-Reverting Markets</h2>
+                    <p class="post-excerpt">The strategy that made you money last month might lose you money this month. Learn to identify and adapt to changing market conditions.</p>
+                    <div class="post-meta">Read Article</div>
+                </a>
+
+                <a href="trading-signal-services/" class="post-card">
+                    <h2 class="post-title">The Truth About Trading Signal Services: Red Flags and What to Look For</h2>
+                    <p class="post-excerpt">Most signal services are garbage. Here's how to tell the difference. A comprehensive framework for evaluating legitimate signal providers.</p>
+                    <div class="post-meta">Read Article</div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 ATrades. Professional AI trading signals.</p>
+        </div>
+    </footer>
+</body>
+</html>
