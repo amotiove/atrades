@@ -103,11 +103,15 @@ section{padding:100px 0}
 .dash-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
 .dash-header h3{font-size:1rem;display:flex;align-items:center;gap:10px}
 .dash-tabs{display:flex;gap:4px}
-.dash-tab{font-family:var(--font-mono);font-size:.7rem;padding:6px 14px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--gray);cursor:pointer}
+.dash-tab{font-family:var(--font-mono);font-size:.7rem;padding:6px 14px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--gray);cursor:pointer;transition:all .2s}
+.dash-tab:hover{border-color:var(--green);color:var(--white)}
 .dash-tab.active{background:var(--green);color:var(--bg);border-color:var(--green)}
 .dash-body{display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--border)}
 .dash-panel{background:var(--bg2);padding:24px}
 .dash-panel h4{font-family:var(--font-mono);font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+
+/* Recent Trades Table with Blur Effect */
+.trades-table-container{position:relative}
 .trades-table{width:100%;font-family:var(--font-mono);font-size:.78rem}
 .trades-table th{text-align:left;color:var(--gray);font-weight:400;padding:8px 0;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
 .trades-table td{padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
@@ -117,6 +121,55 @@ section{padding:100px 0}
 .trades-table tr:nth-child(3){animation-delay:.3s}
 .trades-table tr:nth-child(4){animation-delay:.4s}
 .trades-table tr:nth-child(5){animation-delay:.5s}
+
+/* Blur effect for asset and strategy columns */
+.trades-table .blur-cell{
+  filter: blur(4px);
+  position: relative;
+  cursor: help;
+}
+.trades-table .blur-cell::before{
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: .6rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  border: 1px solid var(--border);
+  z-index: 10;
+}
+.trades-table .blur-cell:hover::before{
+  opacity: 1;
+}
+
+/* Subscription overlay */
+.subscription-overlay{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(11,15,26,.9);
+  color: var(--green);
+  padding: 8px 12px;
+  border-radius: 8px 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-right: none;
+}
+
 .chart-area{position:relative;height:200px}
 .chart-area svg{width:100%;height:100%}
 .chart-line{fill:none;stroke:var(--green);stroke-width:2;stroke-dasharray:1000;stroke-dashoffset:1000;animation:chartDraw 2s ease forwards}
@@ -124,6 +177,9 @@ section{padding:100px 0}
 .alloc-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(30,41,59,.5)}
 .alloc-bar{height:4px;border-radius:2px;background:var(--border);flex:1;margin:0 12px;position:relative;overflow:hidden}
 .alloc-fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;transition:width 1.5s ease}
+
+/* MTD Return Display */
+.mtd-return{display:flex;justify-content:space-between;margin-top:12px;font-family:var(--font-mono);font-size:.75rem}
 
 /* Pricing */
 .pricing-section{overflow:hidden}
@@ -171,7 +227,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 
 /* Mobile */
 @media(max-width:768px){
-  .nav-links{display:none}
+  .nav-links{display:none;position:fixed;top:60px;left:0;right:0;bottom:0;background:rgba(11,15,26,0.98);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:24px;z-index:99}
   .mobile-menu{display:block}
   .stats-bar{grid-template-columns:repeat(2,1fr)}
   .steps{grid-template-columns:1fr;gap:40px}
@@ -283,31 +339,36 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
     <div class="dash-header">
       <h3><span class="pulse-dot"></span> Live Dashboard</h3>
       <div class="dash-tabs">
-        <button class="dash-tab active">1D</button>
-        <button class="dash-tab">1W</button>
-        <button class="dash-tab">1M</button>
-        <button class="dash-tab">ALL</button>
+        <button class="dash-tab active" onclick="switchTimeframe('1D')">1D</button>
+        <button class="dash-tab" onclick="switchTimeframe('1W')">1W</button>
+        <button class="dash-tab" onclick="switchTimeframe('1M')">1M</button>
+        <button class="dash-tab" onclick="switchTimeframe('ALL')">ALL</button>
       </div>
     </div>
     <div class="dash-body">
       <div class="dash-panel">
         <h4>Recent Trades</h4>
-        <table class="trades-table">
-          <thead><tr><th>Asset</th><th>Strategy</th><th>Side</th><th>P&L</th><th>Time</th></tr></thead>
-          <tbody id="tradesBody"></tbody>
-        </table>
+        <div class="trades-table-container">
+          <table class="trades-table">
+            <thead><tr><th>Asset</th><th>Strategy</th><th>Side</th><th>P&L</th><th>Time</th></tr></thead>
+            <tbody id="tradesBody"></tbody>
+          </table>
+          <div class="subscription-overlay">
+            🔒 Subscribe to see live trades
+          </div>
+        </div>
       </div>
       <div class="dash-panel">
         <h4>Portfolio P&L</h4>
         <div class="chart-area">
-          <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+          <svg id="chartSvg" viewBox="0 0 400 200" preserveAspectRatio="none">
             <defs><linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00FF88" stop-opacity=".3"/><stop offset="100%" stop-color="#00FF88" stop-opacity="0"/></linearGradient></defs>
-            <path class="chart-fill" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15 400,200 0,200Z"/>
-            <path class="chart-line" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15"/>
+            <path id="chartFill" class="chart-fill" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15 400,200 0,200Z"/>
+            <path id="chartLine" class="chart-line" d="M0,180 L30,160 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,30 360,35 400,15"/>
           </svg>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:12px;font-family:var(--font-mono);font-size:.75rem">
-          <span class="gray">MTD Return</span><span class="green">+12.4%</span>
+        <div class="mtd-return">
+          <span class="gray" id="returnLabel">YTD Return</span><span class="green" id="returnValue">+63.2%</span>
         </div>
         <h4 style="margin-top:24px">Allocation</h4>
         <div id="allocList"></div>
@@ -337,6 +398,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
         <li>Community access</li>
       </ul>
       <a href="https://whop.com/atrades-0ec0/pro-7b" target="_blank" class="price-btn outline" style="text-decoration:none">Get Pro</a>
+      <div style="margin-top:8px;text-align:center;font-size:.75rem;color:var(--gray)">No credit card required</div>
     </div>
     <div class="price-card popular fade-in">
       <div class="popular-badge">Most Popular</div>
@@ -352,6 +414,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
         <li>Advanced analytics</li>
       </ul>
       <a href="https://whop.com/atrades-0ec0/ultimate-58" target="_blank" class="price-btn primary" style="text-decoration:none">Get Super</a>
+      <div style="margin-top:8px;text-align:center;font-size:.75rem;color:var(--gray)">No credit card required</div>
     </div>
     <div class="price-card fade-in">
       <div class="price-tier" style="color:var(--gold)">Ultimate</div>
@@ -366,6 +429,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
         <li>Dedicated account manager</li>
       </ul>
       <a href="https://whop.com/atrades-0ec0/ultimate-6a" target="_blank" class="price-btn outline" style="text-decoration:none">Get Ultimate</a>
+      <div style="margin-top:8px;text-align:center;font-size:.75rem;color:var(--gray)">No credit card required</div>
     </div>
   </div>
 </div>
@@ -386,7 +450,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="logo">A<span style="color:var(--green)">Trades</span></div>
-      <p>AI-powered trading signals powered by AI. Scanning 500+ markets so you don't have to.</p>
+      <p>AI-powered trading signals scanning 500+ markets so you don't have to.</p>
     </div>
     <div class="footer-col">
       <h4>Product</h4>
@@ -418,9 +482,9 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;margin-top:40px}
 </footer>
 
 <!-- Three.js & GSAP -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
 // ============ ORIGINAL SITE LOGIC ============
@@ -443,26 +507,181 @@ strategies.forEach(s=>{
   grid.innerHTML+=`<div class="strat-card fade-in"><span class="strat-badge ${s.type}">${s.badge}</span><h3>${s.name}</h3><p>${s.desc}</p></div>`;
 });
 
-// Trades data
+// NEW: REALISTIC TRADES DATA WITH BLUR
 const trades=[
-  {asset:'AAPL',strat:'EMA Momentum',side:'LONG',pnl:'+2.4%',time:'2m ago'},
-  {asset:'BTC/USD',strat:'ICT Smart Money',side:'SHORT',pnl:'+1.8%',time:'14m ago'},
-  {asset:'EUR/USD',strat:'VWAP Reversion',side:'LONG',pnl:'-0.6%',time:'28m ago'},
-  {asset:'TSLA',strat:'Opening Range',side:'LONG',pnl:'+4.1%',time:'1h ago'},
-  {asset:'ETH/USD',strat:'RSI Mean Rev.',side:'SHORT',pnl:'+1.2%',time:'2h ago'},
+  {asset:'PG',strat:'Factor Momentum',side:'LONG',pnl:'+1.8%',time:'12m ago'},
+  {asset:'NVDA',strat:'EMA Momentum',side:'LONG',pnl:'+3.2%',time:'25m ago'},
+  {asset:'KO',strat:'VWAP Reversion',side:'LONG',pnl:'+0.9%',time:'38m ago'},
+  {asset:'TSLA',strat:'Swing Percoco',side:'LONG',pnl:'+2.1%',time:'1h ago'},
+  {asset:'BAC',strat:'RSI Mean Reversion',side:'LONG',pnl:'+1.4%',time:'2h ago'},
 ];
+
 const tbody=document.getElementById('tradesBody');
 trades.forEach(t=>{
   const c=t.pnl.startsWith('+')?'green':'red';
-  tbody.innerHTML+=`<tr><td><strong>${t.asset}</strong></td><td class="gray">${t.strat}</td><td>${t.side}</td><td class="${c} mono">${t.pnl}</td><td class="gray">${t.time}</td></tr>`;
+  tbody.innerHTML+=`<tr>
+    <td class="blur-cell" data-tooltip="Subscribe to reveal"><strong>${t.asset}</strong></td>
+    <td class="gray blur-cell" data-tooltip="Subscribe to reveal">${t.strat}</td>
+    <td>${t.side}</td>
+    <td class="${c} mono">${t.pnl}</td>
+    <td class="gray">${t.time}</td>
+  </tr>`;
 });
 
-// Allocation
-const allocs=[{name:'Equities',pct:40,color:'#00FF88'},{name:'Crypto',pct:25,color:'#FFD700'},{name:'Forex',pct:20,color:'#3B82F6'},{name:'Cash',pct:15,color:'#8892a4'}];
+// NEW: REAL ALLOCATION DATA
+const allocs=[
+  {name:'Factor Momentum',pct:40,color:'#00FF88'},
+  {name:'EMA Momentum',pct:33,color:'#FFD700'},
+  {name:'Swing Percoco',pct:26,color:'#3B82F6'},
+  {name:'Cash',pct:1,color:'#8892a4'}
+];
+
 const allocList=document.getElementById('allocList');
 allocs.forEach(a=>{
-  allocList.innerHTML+=`<div class="alloc-item"><span class="mono" style="font-size:.8rem;min-width:70px">${a.name}</span><div class="alloc-bar"><div class="alloc-fill" style="width:0%;background:${a.color}" data-width="${a.pct}%"></div></div><span class="mono" style="font-size:.8rem">${a.pct}%</span></div>`;
+  allocList.innerHTML+=`<div class="alloc-item"><span class="mono" style="font-size:.8rem;min-width:100px">${a.name}</span><div class="alloc-bar"><div class="alloc-fill" style="width:0%;background:${a.color}" data-width="${a.pct}%"></div></div><span class="mono" style="font-size:.8rem">${a.pct}%</span></div>`;
 });
+
+// NEW: TIMEFRAME DATA
+const timeframeData = {
+  '1D': {
+    label: 'Today Return',
+    return: '+1.7%',
+    data: [
+      {time: '9:30', value: 0.2},
+      {time: '10:00', value: 0.6},
+      {time: '10:30', value: 0.7},
+      {time: '11:00', value: 0.5},
+      {time: '11:30', value: 0.8},
+      {time: '12:00', value: 1.3},
+      {time: '12:30', value: 1.4},
+      {time: '13:00', value: 1.7}
+    ]
+  },
+  '1W': {
+    label: 'Week Return',
+    return: '+2.7%',
+    data: [
+      {time: 'Mon', value: 0.8},
+      {time: 'Tue', value: 0.5},
+      {time: 'Wed', value: 1.7},
+      {time: 'Thu', value: 2.3},
+      {time: 'Fri', value: 2.7},
+      {time: 'Sat', value: 2.7},
+      {time: 'Sun', value: 2.7}
+    ]
+  },
+  '1M': {
+    label: 'Month Return',
+    return: '+4.3%',
+    data: [
+      {time: 'W1', value: 2.1},
+      {time: 'W2', value: 3.4},
+      {time: 'W3', value: 2.6},
+      {time: 'W4', value: 4.3}
+    ]
+  },
+  'ALL': {
+    label: 'YTD Return',
+    return: '+63.2%',
+    data: [
+      {time: 'Jan', value: 4.2},
+      {time: 'Feb', value: 10.2},
+      {time: 'Mar', value: 13.5},
+      {time: 'Apr', value: 10.8},
+      {time: 'May', value: 18.6},
+      {time: 'Jun', value: 24.1},
+      {time: 'Jul', value: 31.0},
+      {time: 'Aug', value: 28.5},
+      {time: 'Sep', value: 34.6},
+      {time: 'Oct', value: 44.7},
+      {time: 'Nov', value: 49.4},
+      {time: 'Dec', value: 57.8},
+      {time: 'Jan26', value: 63.7},
+      {time: 'Feb26', value: 68.4}
+    ]
+  }
+};
+
+let currentTimeframe = '1D';
+
+// NEW: TIMEFRAME SWITCHING FUNCTION
+function switchTimeframe(timeframe) {
+  currentTimeframe = timeframe;
+  
+  // Update active tab
+  document.querySelectorAll('.dash-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Update return display
+  const data = timeframeData[timeframe];
+  document.getElementById('returnLabel').textContent = data.label;
+  document.getElementById('returnValue').textContent = data.return;
+  
+  // Update chart
+  updateChart(data.data);
+}
+
+function updateChart(data) {
+  const svg = document.getElementById('chartSvg');
+  const chartLine = document.getElementById('chartLine');
+  const chartFill = document.getElementById('chartFill');
+  
+  // Calculate new path
+  const width = 400;
+  const height = 200;
+  const padding = 20;
+  const chartWidth = width - (padding * 2);
+  const chartHeight = height - (padding * 2);
+  
+  const maxValue = Math.max(...data.map(d => d.value));
+  const minValue = Math.min(...data.map(d => d.value));
+  const valueRange = maxValue - minValue || 1;
+  
+  let pathData = '';
+  let fillData = '';
+  
+  data.forEach((point, index) => {
+    const x = padding + (index / (data.length - 1)) * chartWidth;
+    const y = height - padding - ((point.value - minValue) / valueRange) * chartHeight;
+    
+    if (index === 0) {
+      pathData += `M${x},${y}`;
+      fillData += `M${x},${y}`;
+    } else {
+      pathData += ` L${x},${y}`;
+      fillData += ` L${x},${y}`;
+    }
+  });
+  
+  // Close fill path
+  const lastX = padding + chartWidth;
+  const bottomY = height - padding;
+  fillData += ` L${lastX},${bottomY} L${padding},${bottomY}Z`;
+  
+  // Animate the transition with GSAP
+  gsap.to(chartLine, {
+    duration: 1,
+    ease: "power2.out",
+    attr: { d: pathData },
+    strokeDasharray: "1000",
+    strokeDashoffset: "1000"
+  });
+  
+  gsap.to(chartFill, {
+    duration: 1,
+    ease: "power2.out",
+    attr: { d: fillData }
+  });
+  
+  // Restart the draw animation
+  setTimeout(() => {
+    chartLine.style.strokeDasharray = "1000";
+    chartLine.style.strokeDashoffset = "1000";
+    chartLine.style.animation = "chartDraw 2s ease forwards";
+  }, 100);
+}
 
 // FAQ
 const faqs=[
@@ -508,8 +727,20 @@ function animateAlloc(){
   });
 }
 
-setTimeout(animateCounters,500);
-setTimeout(animateAlloc,1000);
+// Trigger counters on scroll into view
+const statsBar = document.querySelector('.stats-bar');
+let countersAnimated = false;
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !countersAnimated) {
+      countersAnimated = true;
+      animateCounters();
+      setTimeout(animateAlloc, 500);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+if (statsBar) counterObserver.observe(statsBar);
 
 // ============ THREE.JS 3D EFFECTS ============
 const isMobile = window.innerWidth < 768;
